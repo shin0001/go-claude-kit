@@ -1,0 +1,15 @@
+{
+  "_comentario": "OPCIONAL. Cada MCP ativo custa tokens de input em TODO turno. Prefira CLIs via Bash (gh, psql, curl). Copie para .mcp.json e remova o que nao usar.",
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"],
+      "_uso": "Docs atualizadas de libs Go. Util no perfil pragmatic; inutil no minimal (go doc resolve)."
+    },
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost/SEUDB"],
+      "_uso": "Inspecionar schema em dev. Aponte para banco LOCAL, nunca producao."
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "defaultMode": "default",
+    "allow": [
+      "Bash(go build:*)", "Bash(go test:*)", "Bash(go vet:*)", "Bash(go doc:*)",
+      "Bash(gofmt:*)", "Bash(goimports:*)",
+      "Bash(govulncheck:*)", "Bash(gosec:*)", "Bash(gitleaks:*)",
+      "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)"
+    ],
+    "deny": [
+      "Bash(git push:*)", "Bash(rm -rf:*)",
+      "Read(./.env)", "Read(./.env.*)", "Read(./secrets/**)",
+      "Read(**/*.pem)", "Read(**/id_rsa*)", "Read(**/*.key)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/go-postedit.sh\"" },
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/go-secret-guard.sh\"" }
+        ]
+      }
+    ]
+  }
+}

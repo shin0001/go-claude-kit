@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Bash(go build:*)", "Bash(go test:*)", "Bash(go vet:*)", "Bash(go doc:*)",
+      "Bash(go mod tidy:*)", "Bash(gofmt:*)", "Bash(gofumpt:*)", "Bash(goimports:*)",
+      "Bash(golangci-lint:*)", "Bash(make:*)",
+      "Bash(govulncheck:*)", "Bash(gosec:*)", "Bash(gitleaks:*)",
+      "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git add:*)", "Bash(git commit:*)"
+    ],
+    "deny": [
+      "Bash(git push:*)", "Bash(rm -rf:*)",
+      "Read(./.env)", "Read(./.env.*)", "Read(./secrets/**)",
+      "Read(**/*.pem)", "Read(**/id_rsa*)", "Read(**/*.key)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/go-postedit.sh\"" },
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/go-secret-guard.sh\"" }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [{ "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/go-stop-check.sh\"" }]
+      }
+    ]
+  }
+}
