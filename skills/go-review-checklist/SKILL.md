@@ -23,8 +23,11 @@ Ordem de severidade. Reportar formato: `arquivo:linha [SEV] problema -> fix`.
 - Complexidade: funcao >50 linhas fazendo 3 coisas; aninhamento >3 niveis.
 - Log + return do mesmo erro (duplicacao).
 
+## WARN (adicional)
+- Identificador/erro/log fora do ingles. Comentario narrando o obvio (pedir remocao). `types.go`/`models.go` generico em codigo novo.
+
 ## NIT
-- Nome com stutter, comentario obvio, else apos return, ordem de imports.
+- Nome com stutter, else apos return, ordem de imports.
 - Mensagem de erro capitalizada ou com pontuacao final.
 
 ## Nao comentar

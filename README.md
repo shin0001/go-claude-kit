@@ -82,7 +82,7 @@ Subagents também protegem o contexto da sessão principal: a saída de um `go t
 
 ## Skills
 
-Carregadas sob demanda (não pesam quando não usadas): `go-style` (Effective Go + Google Style destilados), `go-testing` (table-driven, paralelismo, mocks), `go-concurrency` (goroutines, channels, ctx, errgroup), `go-security` (input, SQL, crypto, segredos, hardening, supply chain), `go-review-checklist` (severidades BLOCKER/WARN/NIT).
+Carregadas sob demanda (não pesam quando não usadas): `go-style` (Effective Go + Google Style destilados), `go-testing` (table-driven, paralelismo, mocks), `go-concurrency` (goroutines, channels, ctx, errgroup), `go-security` (input, SQL, crypto, segredos, hardening, supply chain), `go-review-checklist` (severidades BLOCKER/WARN/NIT). Regras transversais embutidas no template e nos agents: código sempre em inglês (independente do idioma do chat), comentários apenas para "porquês" não óbvios, e organização de arquivos por responsabilidade — tipo junto do comportamento, sem `types.go` genérico.
 
 ## Segurança
 

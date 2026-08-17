@@ -13,6 +13,8 @@
 {{MAPA_3_LINHAS_MAX_COM_PONTEIROS_DE_ARQUIVO}}
 
 ## Regras
+- Codigo sempre em INGLES (identificadores, erros, logs, comentarios), mesmo com chat em outro idioma. Comentario so p/ 'porque' nao obvio; legibilidade vem de nomes e funcoes curtas.
+- Arquivos: tipo junto do comportamento (`order.go` tem `Order` + metodos). Sem `types.go`/`models.go`. Dividir por responsabilidade quando a coesao pedir.
 - Erros: wrap com `%w` + contexto da operacao. Sem panic fora de main.
 - `context.Context` 1o arg em I/O. Toda goroutine tem dono e saida.
 - Testes table-driven; unit sem rede/disco/sleep. `-race` em codigo concorrente.
