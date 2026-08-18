@@ -3,6 +3,6 @@
   "description": "Go backend kit: /go-init generator, model-routed agents, skills, quality/security hooks, plan->implement->review->test flow.",
   "version": "1.0.0",
   "author": {
-    "name": "voce"
+    "name": "shin0001"
   }
 }
