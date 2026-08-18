@@ -1,46 +1,46 @@
 ---
 name: go-style
-description: Estilo Go idiomatico (Effective Go + Google Style resumidos). Use ao escrever ou revisar qualquer codigo Go.
+description: Idiomatic Go style (Effective Go + Google Style distilled). Use when writing or reviewing any Go code.
 ---
 
 # go-style
 
-## Idioma e comentarios
-- Codigo 100% em ingles — identificadores, mensagens de erro, logs, nomes de teste, comentarios — independente do idioma da conversa.
-- Comentario so quando explica um PORQUE nao obvio (workaround, invariante, decisao contra o intuitivo). Nunca narrar o que o codigo ja diz (`// increment counter` = deletar).
-- Godoc apenas em API exportada, e so se agrega alem da assinatura. Frase comeca com o nome: `// Order represents...`.
-- Legibilidade vem do codigo, nao do comentario: nome que elimina o comentario > comentario. Funcao curta com nome claro > bloco comentado.
-- TODO com dono/contexto: `// TODO(user): reason`. Sem codigo comentado morto.
+## Language and comments
+- Code 100% in English — identifiers, error messages, logs, test names, comments — regardless of conversation language.
+- Comment only to explain a non-obvious WHY (workaround, invariant, counter-intuitive decision). Never narrate what code already says (`// increment counter` = delete).
+- Godoc only on exported API, and only if it adds beyond the signature. Sentence starts with the name: `// Order represents...`.
+- Readability comes from code, not comments: a name that removes the comment > the comment. Short well-named function > commented block.
+- TODO with owner/context: `// TODO(user): reason`. No dead commented-out code.
 
-## Erros
-- Envolver com contexto da operacao: `fmt.Errorf("open config: %w", err)`. Sem "failed to" repetido em cada nivel.
-- Sentinelas: `var ErrNotFound = errors.New(...)`; checar com `errors.Is/As`, nunca comparar string.
-- Tipos de erro custom so quando o caller precisa de dados estruturados.
-- panic: apenas main/init ou bug impossivel. Lib nunca panica.
-- Nao logar E retornar o mesmo erro (log duplicado). Logue na borda (handler), retorne no meio.
+## Errors
+- Wrap with operation context: `fmt.Errorf("open config: %w", err)`. No repeated "failed to" at every level.
+- Sentinels: `var ErrNotFound = errors.New(...)`; check with `errors.Is/As`, never compare strings.
+- Custom error types only when the caller needs structured data.
+- panic: only main/init or impossible bugs. Libraries never panic.
+- Don't log AND return the same error (double logging). Log at the edge (handler), return in the middle.
 
-## API e tipos
-- Aceite interfaces, retorne structs. Interface definida no pacote consumidor, nao no produtor.
-- Interfaces pequenas (1-3 metodos). `io.Reader` > `*os.File` em assinaturas.
-- Zero-value util: `var b bytes.Buffer` funciona; construtor `NewX` so quando ha invariantes.
-- `context.Context` primeiro parametro de tudo que faz I/O. Nunca guardar ctx em struct.
-- Exportar o minimo. `internal/` para tudo que nao e API publica.
+## API and types
+- Accept interfaces, return structs. Interface defined in the consumer package, not the producer.
+- Small interfaces (1-3 methods). `io.Reader` > `*os.File` in signatures.
+- Useful zero-value: `var b bytes.Buffer` works; `NewX` constructor only for invariants.
+- `context.Context` first parameter of everything doing I/O. Never store ctx in a struct.
+- Export the minimum. `internal/` for everything that isn't public API.
 
-## Codigo
-- Early return; happy path sem indentacao. Sem `else` apos return.
-- Nomes curtos em escopo curto (`i`, `r`, `srv`); descritivos em escopo longo. Sem stutter: `user.New`, nao `user.NewUser`.
-- Receiver: ponteiro se muta ou struct grande; consistente no tipo todo.
-- Sem naked returns. Sem `init()` com logica. Sem variavel global mutavel.
-- slog para logs estruturados (stdlib >= 1.21). Nao fmt.Println em servidor.
+## Code
+- Early return; happy path unindented. No `else` after return.
+- Short names in short scopes (`i`, `r`, `srv`); descriptive in long scopes. No stutter: `user.New`, not `user.NewUser`.
+- Receiver: pointer if it mutates or struct is large; consistent across the type.
+- No naked returns. No `init()` with logic. No mutable globals.
+- slog for structured logs (stdlib >= 1.21). No fmt.Println in servers.
 
 ## Layout
-- `cmd/<bin>/main.go` fino: parse config, monta deps, chama `run(ctx) error`.
-- `internal/` por dominio (ex: `internal/order`), nao por camada tecnica (`models`, `services`, `utils`, `common` = proibido).
-- Sem `pkg/` novo por default.
+- `cmd/<bin>/main.go` thin: parse config, wire deps, call `run(ctx) error`.
+- `internal/` by domain (e.g. `internal/order`), not technical layer (`models`, `services`, `utils`, `common` = forbidden).
+- No new `pkg/` by default.
 
-## Arquivos dentro do pacote
-- Tipo vive junto do comportamento: struct + construtor + metodos no arquivo nomeado pelo conceito (`order.go` tem `Order`). NUNCA `types.go`/`models.go` genericos.
-- Pacote pequeno = 1 arquivo, e esta otimo. Nao criar estrutura antecipada.
-- Cresceu: dividir por responsabilidade, nao por especie nem tamanho — ex: `order.go` (dominio), `store.go` (persistencia), `http.go` (transport). Nome do arquivo responde "o que tem aqui".
-- Excecoes aceitas ao "nao agrupar por especie": `errors.go` (sentinelas do pacote), `doc.go` (godoc do pacote), arquivos gerados (`*_gen.go`, separados e nunca editados a mao).
-- Gatilho p/ dividir e coesao (rolar o arquivo procurando coisas nao relacionadas), nao contagem de linhas.
+## Files within a package
+- Type lives with its behavior: struct + constructor + methods in the concept's file (`order.go` holds `Order`). NEVER generic `types.go`/`models.go`.
+- Small package = 1 file, and that's fine. Don't build structure ahead of need.
+- When it grows: split by responsibility, not by kind or size — e.g. `order.go` (domain), `store.go` (persistence), `http.go` (transport). Filename answers "what's in here".
+- Accepted exceptions to "don't group by kind": `errors.go` (package sentinels), `doc.go` (package godoc), generated files (`*_gen.go`, separate, never hand-edited).
+- Split trigger is cohesion (scrolling past unrelated things), not line count.

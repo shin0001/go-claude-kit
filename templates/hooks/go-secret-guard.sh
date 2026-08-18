@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PostToolUse(Edit|Write): bloqueia (exit 2) se a edicao introduziu padrao de segredo.
+# PostToolUse(Edit|Write): blocks (exit 2) if the edit introduced a secret pattern.
 set -u
 INPUT=$(cat)
 if command -v jq >/dev/null 2>&1; then
@@ -21,7 +21,7 @@ HITS=$(grep -nE \
   "$FILE" 2>/dev/null | grep -v 'gcksafe')
 
 if [ -n "$HITS" ]; then
-  echo "POSSIVEL SEGREDO em $FILE — mova para env/secret manager, ou marque a linha com // gcksafe se for dummy comprovado:" >&2
+  echo "POSSIBLE SECRET in $FILE — move to env/secret manager, or mark the line with // gcksafe if it's a proven dummy:" >&2
   echo "$HITS" | head -5 >&2
   exit 2
 fi

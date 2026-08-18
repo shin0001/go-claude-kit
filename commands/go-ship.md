@@ -1,12 +1,12 @@
 ---
-description: Prepara commit(s) convencionais e o comando de push/PR (push e sempre manual)
-argument-hint: [mensagem ou vazio p/ inferir do diff]
+description: Prepares conventional commit(s) and the push/PR command (push is always manual)
+argument-hint: [message or empty to infer from diff]
 ---
 
-1. `git status` + `git diff`. Nada staged e nada modificado => avisar e parar.
-2. Agrupar mudancas em commits atomicos (1 intencao = 1 commit). Mensagem: Conventional Commits, imperativo, subject <= 50 chars, corpo so se o "por que" nao for obvio. "$ARGUMENTS" como base se fornecido.
-3. Pre-voo barato: `go build ./...` + testes dos pacotes tocados. Falhou => parar, nao commitar quebrado.
-4. `git add` seletivo (NUNCA `git add .` cego — respeitar secret-guard e .gitignore) + `git commit`.
-5. Push e PR sao SEUS (o settings nega `git push` de proposito). Imprimir pronto p/ colar:
+1. `git status` + `git diff`. Nothing staged and nothing modified => warn and stop.
+2. Group changes into atomic commits (1 intent = 1 commit). Message: Conventional Commits, imperative, subject <= 50 chars, body only if the "why" isn't obvious. Use "$ARGUMENTS" as base if given.
+3. Cheap preflight: `go build ./...` + tests of touched packages. Failed => stop, never commit broken.
+4. Selective `git add` (NEVER blind `git add .` — respect secret-guard and .gitignore) + `git commit`.
+5. Push and PR are the USER's (settings denies `git push` on purpose). Print ready to paste:
    `git push -u origin <branch> && gh pr create --title "..." --body "..."`
-   Corpo do PR: resumo em 3 bullets + "como testar" em 1 linha.
+   PR body: 3-bullet summary + "how to test" in 1 line.

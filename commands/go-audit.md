@@ -1,8 +1,8 @@
 ---
-description: Auditoria de seguranca (govulncheck + gosec + gitleaks + revisao) via agent go-auditor
-argument-hint: [pacote ou vazio p/ ./...]
+description: Security audit (govulncheck + gosec + gitleaks + review) via the go-auditor agent
+argument-hint: [package or empty for ./...]
 ---
 
-Delegar ao agent **go-auditor**: escopo "$ARGUMENTS" (vazio => repo todo).
-Repassar o relatorio cru. Se houver CRIT/HIGH e modo autopilot: oferecer corrigir via go-implementer (1 pergunta, nao insistir).
-Ferramentas ausentes: mostrar comando de instalacao (govulncheck: `go install golang.org/x/vuln/cmd/govulncheck@latest`; gosec: `go install github.com/securego/gosec/v2/cmd/gosec@latest`; gitleaks: gerenciador de pacotes do SO).
+Delegate to the **go-auditor** agent: scope "$ARGUMENTS" (empty => whole repo).
+Relay the raw report. If CRIT/HIGH and autopilot mode: offer to fix via go-implementer (ask once, don't push).
+Missing tools: show install commands (govulncheck: `go install golang.org/x/vuln/cmd/govulncheck@latest`; gosec: `go install github.com/securego/gosec/v2/cmd/gosec@latest`; gitleaks: OS package manager).

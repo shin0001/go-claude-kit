@@ -1,18 +1,18 @@
 ---
-description: Salva o estado da sessao em docs/handoff.md para retomar barato apos /clear
+description: Saves session state to docs/handoff.md to resume cheaply after /clear
 ---
 
-Escrever/sobrescrever `docs/handoff.md`, MAXIMO 30 linhas:
+Write/overwrite `docs/handoff.md`, MAX 30 lines:
 
 ```
-# Handoff <data>
-Tarefa: 1 frase.
-Feito: bullets (so o relevante p/ continuar).
-Proximo passo: bullets acionaveis, em ordem.
-Arquivos quentes: caminho — por que importa (1 linha cada).
-Armadilhas: o que ja tentei e nao funcionou / decisoes tomadas e por que.
-Plano ativo: docs/plans/NNN (se houver).
+# Handoff <date>
+Task: 1 sentence.
+Done: bullets (only what matters to continue).
+Next step: actionable bullets, in order.
+Hot files: path — why it matters (1 line each).
+Pitfalls: what was tried and failed / decisions made and why.
+Active plan: docs/plans/NNN (if any).
 ```
 
-Sem historia da conversa, sem codigo colado. So o que a proxima sessao precisa p/ nao redescobrir nada.
-Ao final: confirmar salvo e sugerir `/clear`. Na proxima sessao: "leia docs/handoff.md" e mais barato que herdar contexto inchado.
+No conversation history, no pasted code. Only what the next session needs to rediscover nothing.
+At the end: confirm saved and suggest `/clear`. Next session: "read docs/handoff.md" is far cheaper than inheriting a bloated context.

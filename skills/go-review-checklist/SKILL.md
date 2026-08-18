@@ -1,34 +1,32 @@
 ---
 name: go-review-checklist
-description: Checklist completo de code review Go usado pelo agent go-reviewer e pelo comando /go-review.
+description: Full Go code review checklist used by the go-reviewer agent and /go-review command.
 ---
 
 # go-review-checklist
 
-Ordem de severidade. Reportar formato: `arquivo:linha [SEV] problema -> fix`.
+Severity order. Report format: `file:line [SEV] problem -> fix`.
 
 ## BLOCKER
-- Erro ignorado (`_ = f()` sem justificativa) ou engolido em branch.
-- Data race, goroutine leak, channel deadlock potencial.
-- Recurso sem fechar: Body, Rows, arquivo, tx sem Rollback no defer.
-- SQL por concatenacao; segredo/credencial no codigo; input externo sem validacao.
-- Client HTTP/DB sem timeout.
-- Quebra de compatibilidade de API exportada sem versionamento.
+- Error ignored (`_ = f()` without justification) or swallowed in a branch.
+- Data race, goroutine leak, potential channel deadlock.
+- Unclosed resource: Body, Rows, file, tx without deferred Rollback.
+- SQL by concatenation; secret/credential in code; unvalidated external input.
+- HTTP/DB client without timeout.
+- Breaking change to exported API without versioning.
 
 ## WARN
-- Erro sem `%w` quando caller pode precisar de `errors.Is/As`.
-- Interface grande (>3 metodos) ou definida no produtor sem necessidade.
-- Teste ausente para caminho de erro novo; teste com sleep/rede real.
-- Codigo morto, export desnecessario, dependencia nova nao justificada.
-- Complexidade: funcao >50 linhas fazendo 3 coisas; aninhamento >3 niveis.
-- Log + return do mesmo erro (duplicacao).
-
-## WARN (adicional)
-- Identificador/erro/log fora do ingles. Comentario narrando o obvio (pedir remocao). `types.go`/`models.go` generico em codigo novo.
+- Error without `%w` when the caller may need `errors.Is/As`.
+- Oversized interface (>3 methods) or defined at the producer without need.
+- Missing test for a new error path; test with sleep/real network.
+- Dead code, needless export, unjustified new dependency.
+- Complexity: >50-line function doing 3 things; nesting >3 levels.
+- Log + return of the same error (duplication).
+- Non-English identifier/error/log. Comment narrating the obvious (ask removal). Generic `types.go`/`models.go` in new code.
 
 ## NIT
-- Nome com stutter, else apos return, ordem de imports.
-- Mensagem de erro capitalizada ou com pontuacao final.
+- Stuttering name, else after return, import order.
+- Capitalized error message or trailing punctuation.
 
-## Nao comentar
-- Estilo que gofumpt/golangci-lint ja pega. Preferencia pessoal sem impacto.
+## Don't comment on
+- Style gofumpt/golangci-lint already catches. Personal preference without impact.

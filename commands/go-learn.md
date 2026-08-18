@@ -1,28 +1,28 @@
 ---
-description: Captura uma licao da sessao e persiste no escopo certo (projeto, global, skill ou plugin)
-argument-hint: [licao em 1 frase | vazio p/ extrair da conversa]
+description: Captures a session lesson and persists it in the right scope (project, global, skill or plugin)
+argument-hint: [lesson in 1 sentence | empty to extract from conversation]
 ---
 
-Licao: "$ARGUMENTS". Se vazio: identificar na conversa recente correcoes do usuario, retrabalho ou preferencia repetida; propor a licao em 1 linha imperativa e confirmar.
+Lesson: "$ARGUMENTS". If empty: find recent user corrections, rework, or repeated preferences in the conversation; propose the lesson as 1 imperative line and confirm.
 
-## 1. Classificar escopo (perguntar via AskUserQuestion se ambiguo)
-| Escopo | Quando | Destino | Cap |
+## 1. Classify scope (AskUserQuestion if ambiguous)
+| Scope | When | Destination | Cap |
 |---|---|---|---|
-| **projeto** | especifico deste codebase (convencao, armadilha local) | `.claude/learned.md` | 15 linhas |
-| **global-sempre** | preferencia minha que vale em TODO projeto, todo turno | `~/.claude/CLAUDE.md`, secao `## Go — aprendizados` | 10 linhas |
-| **global-tecnica** | padrao/armadilha tecnica de Go, util sob demanda | `~/.claude/skills/go-lessons/SKILL.md` | 30 linhas |
-| **plugin** | boa pratica universal que deveria valer p/ qualquer usuario do kit | patch no repo do go-claude-kit | — |
+| **project** | specific to this codebase (local convention, local pitfall) | `.claude/learned.md` | 15 lines |
+| **global-always** | user preference valid in EVERY project, every turn | `~/.claude/CLAUDE.md`, section `## Go — learnings` | 10 lines |
+| **global-technical** | Go technical pattern/pitfall, useful on demand | `~/.claude/skills/go-lessons/SKILL.md` | 30 lines |
+| **plugin** | universal best practice that should ship to any kit user | patch in the go-claude-kit repo | — |
 
-Criterio: preferencia pessoal NUNCA vai p/ plugin. Detalhe de 1 codebase NUNCA vai p/ global.
+Criterion: personal preference NEVER goes to plugin. Single-codebase detail NEVER goes global.
 
-## 2. Persistir (com higiene — isto e o que impede inflacao de contexto)
-- Formato: `- ` + 1 linha imperativa, especifica, verificavel. Sem prosa.
-- Antes de adicionar: grep no destino por licao similar. Similar existe => MESCLAR na existente, nao duplicar.
-- Estourou o cap => fundir as 2 mais parecidas ou propor remover a menos util (usuario decide). Cap e inviolavel.
-- Destino global nao existe => criar (skill go-lessons: frontmatter `name: go-lessons`, `description: Licoes de Go deste usuario. Use ao escrever/revisar Go.`).
+## 2. Persist (with hygiene — this is what prevents context inflation)
+- Format: `- ` + 1 imperative, specific, verifiable line. No prose.
+- Before adding: grep the destination for a similar lesson. Similar exists => MERGE into it, don't duplicate.
+- Cap exceeded => merge the 2 most similar or propose removing the least useful (user decides). The cap is inviolable.
+- Global destination missing => create it (go-lessons skill: frontmatter `name: go-lessons`, `description: This user's Go lessons. Use when writing/reviewing Go.`).
 
-## 3. Escopo plugin
-Perguntar caminho do clone local do go-claude-kit. Existe => editar o skill/agent/comando pertinente + lembrar de commitar. Nao existe => imprimir o diff pronto p/ aplicar. Nunca editar `~/.claude/plugins/` direto (update do plugin sobrescreve).
+## 3. Plugin scope
+Ask for the local go-claude-kit clone path. Exists => edit the relevant skill/agent/command + remind to commit. Doesn't exist => print the ready-to-apply diff. Never edit `~/.claude/plugins/` directly (plugin updates overwrite it).
 
-## 4. Confirmar
-Mostrar a linha final + destino + contagem atual/cap. Ex: `projeto 7/15`.
+## 4. Confirm
+Show the final line + destination + current count/cap. E.g. `project 7/15`.

@@ -1,20 +1,20 @@
 ---
-description: Implementa um plano aprovado (ou tarefa direta) conforme o modo do projeto
-argument-hint: [caminho do plano | descricao da tarefa]
+description: Implements an approved plan (or direct task) according to the project mode
+argument-hint: [plan path | task description]
 ---
 
-Alvo: "$ARGUMENTS" (se vazio: plano mais recente em `docs/plans/`).
+Target: "$ARGUMENTS" (empty: most recent plan in `docs/plans/`).
 
-Modo **autopilot** (ver CLAUDE.md):
-1. Delegar ao agent **go-implementer** com o plano completo.
-2. Ao terminar, delegar ao **go-tester** (com `-race` se houve codigo concorrente).
-3. Falhas: devolver diagnostico ao implementer. Max 3 ciclos; depois, parar e reportar.
-4. `go.mod`/`go.sum` mudou => `govulncheck ./...` (ou delegar ao **go-auditor** se a mudanca de deps foi grande).
-5. Delegar diff final ao **go-reviewer**. BLOCKERs: corrigir e re-revisar 1x.
-6. Reporte final: arquivos, testes (pass/fail), achados restantes. Terso.
-7. Retro (1 linha, so se aplicavel): houve correcao do usuario ou retrabalho evitavel => sugerir `/go-learn "<licao>"`.
+**autopilot** mode (see CLAUDE.md):
+1. Delegate to the **go-implementer** agent with the full plan.
+2. When done, delegate to **go-tester** (with `-race` if concurrent code was touched).
+3. Failures: send diagnosis back to implementer. Max 3 cycles; then stop and report.
+4. `go.mod`/`go.sum` changed => `govulncheck ./...` (or delegate to **go-auditor** if the dep change was large).
+5. Delegate the final diff to **go-reviewer**. BLOCKERs: fix and re-review once.
+6. Final report: files, tests (pass/fail), remaining findings. Terse.
+7. Retro (1 line, only if applicable): user correction or avoidable rework happened => suggest `/go-learn "<lesson>"`.
 
-Modo **copilot**:
-1. Implementar VOCE MESMO na sessao principal, passo a passo do plano.
-2. Mostrar diff antes de aplicar quando tocar >1 arquivo. Rodar so os testes do pacote tocado.
-3. Parar entre passos maiores para o usuario validar.
+**copilot** mode:
+1. Implement YOURSELF in the main session, step by step through the plan.
+2. Show diff before applying when touching >1 file. Run only the touched package's tests.
+3. Pause between larger steps for the user to validate.

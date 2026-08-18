@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PostToolUse(Edit|Write): formata e veta apenas o arquivo .go tocado. Rapido e silencioso quando ok.
+# PostToolUse(Edit|Write): format and vet only the touched .go file. Fast and silent when OK.
 set -u
 INPUT=$(cat)
 if command -v jq >/dev/null 2>&1; then
@@ -17,8 +17,8 @@ command -v goimports >/dev/null 2>&1 && goimports -w "$FILE"
 PKG=$(dirname "$FILE")
 VET=$(go vet "./$PKG/..." 2>&1)
 if [ $? -ne 0 ]; then
-  # exit 2 => stderr volta para o Claude corrigir imediatamente
-  echo "go vet falhou em $PKG:" >&2
+  # exit 2 => stderr goes back to Claude to fix immediately
+  echo "go vet failed in $PKG:" >&2
   echo "$VET" | head -20 >&2
   exit 2
 fi

@@ -1,8 +1,8 @@
 ---
-description: Planeja feature/refactor com o agent go-planner e salva em docs/plans/
-argument-hint: <descricao da feature>
+description: Plans a feature/refactor via the go-planner agent, saved to docs/plans/
+argument-hint: <feature description>
 ---
 
-Delegue ao agent **go-planner**: "$ARGUMENTS".
-Salvar o plano em `docs/plans/NNN-slug.md` (NNN = proximo numero livre).
-Mostrar o plano ao usuario e perguntar: aprovar, ajustar, ou descartar. NAO implementar neste comando.
+Delegate to the **go-planner** agent: "$ARGUMENTS".
+Save the plan to `docs/plans/NNN-slug.md` (NNN = next free number).
+Show the plan and ask: approve, adjust, or discard. Do NOT implement in this command.

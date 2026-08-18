@@ -1,6 +1,8 @@
 {
   "name": "go-claude-kit",
-  "description": "Setup gerador para backend Go: perfis (autopilot/copilot), roteamento de modelos, hooks de qualidade e workflow plan->implement->review->test.",
+  "description": "Go backend kit: /go-init generator, model-routed agents, skills, quality/security hooks, plan->implement->review->test flow.",
   "version": "1.0.0",
-  "author": { "name": "voce" }
+  "author": {
+    "name": "voce"
+  }
 }

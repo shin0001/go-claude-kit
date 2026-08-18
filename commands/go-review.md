@@ -1,8 +1,8 @@
 ---
-description: Revisa mudancas com o agent go-reviewer (uncommitted por padrao)
-argument-hint: [git range, ex: main..HEAD]
+description: Reviews changes via the go-reviewer agent (uncommitted by default)
+argument-hint: [git range, e.g. main..HEAD]
 ---
 
-Escopo: `$ARGUMENTS` (vazio => `git diff HEAD` + untracked .go).
-Delegar ao agent **go-reviewer**. Repassar a saida crua ao usuario (formato arquivo:linha ja e terso — nao reformatar, nao resumir).
-Se houver BLOCKER e o modo for autopilot: oferecer corrigir via go-implementer.
+Scope: `$ARGUMENTS` (empty => `git diff HEAD` + untracked .go).
+Delegate to the **go-reviewer** agent. Relay the raw output (file:line format is already terse — don't reformat, don't summarize).
+If there are BLOCKERs and mode is autopilot: offer to fix via go-implementer.

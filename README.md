@@ -2,6 +2,10 @@
 
 Plugin do Claude Code que gera, por projeto, um setup completo para backend Go: `CLAUDE.md`, agents com roteamento de modelo, skills de boas práticas, hooks de qualidade e um fluxo `plan → implement → review → test` — tudo calibrado por perfil (autopilot vs copiloto, minimal vs pragmatic) e otimizado para gastar o mínimo de tokens/limite de uso.
 
+## Idioma
+
+Tudo que **entra em contexto** (skills, agents, comandos, template do CLAUDE.md, mensagens de erro dos hooks) está em **inglês**: tokeniza 20–35% mais barato e melhora a aderência dos agents em Haiku. Tudo que **só humano lê** (este README) fica em português. Isso não muda a conversa: o Claude responde no idioma do chat — a primeira regra do CLAUDE.md gerado ancora exatamente isso ("chat no idioma do usuário; código em inglês").
+
 ## Instalação
 
 Publique este repositório no seu GitHub (ex: `shin0001/go-claude-kit`) e:

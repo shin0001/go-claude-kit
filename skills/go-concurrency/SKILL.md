@@ -1,26 +1,26 @@
 ---
 name: go-concurrency
-description: Concorrencia segura em Go - goroutines, channels, context, errgroup. Use ao escrever/revisar codigo concorrente.
+description: Safe Go concurrency - goroutines, channels, context, errgroup. Use when writing/reviewing concurrent code.
 ---
 
 # go-concurrency
 
-## Regras de ouro
-- Toda goroutine precisa de: (1) dono que espera ela acabar, (2) caminho de saida via ctx/close. Sem fire-and-forget.
-- Quem cria o channel fecha o channel. Receiver nunca fecha.
-- Nao comunicar compartilhando memoria; compartilhar comunicando. Mas: contador/cache simples = mutex, nao channel.
-- `go vet` + `-race` sempre. Race detectada = bug real, nunca "flaky".
+## Golden rules
+- Every goroutine needs: (1) an owner that waits for it, (2) an exit path via ctx/close. No fire-and-forget.
+- Whoever creates the channel closes the channel. Receivers never close.
+- Don't communicate by sharing memory; share by communicating. But: simple counter/cache = mutex, not channel.
+- `go vet` + `-race` always. A detected race is a real bug, never "flaky".
 
-## Padroes
-- Fan-out com limite e erro agregado: `golang.org/x/sync/errgroup` + `g.SetLimit(n)`.
-- Cancelamento: propagar ctx; checar `ctx.Err()` em loops longos; `select { case <-ctx.Done(): return ctx.Err() ... }`.
-- Timeout por operacao: `context.WithTimeout` no caller, nao dentro da funcao.
-- Worker pool so com carga real; antes disso, errgroup resolve.
-- `sync.Once` p/ init lazy; `sync.WaitGroup` quando nao ha erro a propagar.
+## Patterns
+- Bounded fan-out with aggregated error: `golang.org/x/sync/errgroup` + `g.SetLimit(n)`.
+- Cancellation: propagate ctx; check `ctx.Err()` in long loops; `select { case <-ctx.Done(): return ctx.Err() ... }`.
+- Per-operation timeout: `context.WithTimeout` at the caller, not inside the function.
+- Worker pool only under real load; until then, errgroup covers it.
+- `sync.Once` for lazy init; `sync.WaitGroup` when there's no error to propagate.
 
-## Armadilhas
-- Capturar variavel de loop em goroutine (ok >= go1.22, mas seja explicito).
-- `time.Tick` vaza; usar `time.NewTicker` + `defer Stop()`.
-- Mutex copiado por valor (embed `*sync.Mutex` ou receiver ponteiro).
-- Channel sem buffer em publish sem receiver garantido = deadlock.
-- HTTP handler que dispara goroutine usando `r.Context()` apos retorno.
+## Pitfalls
+- Loop variable captured in goroutine (fine >= go1.22, but be explicit).
+- `time.Tick` leaks; use `time.NewTicker` + `defer Stop()`.
+- Mutex copied by value (embed `*sync.Mutex` or pointer receiver).
+- Unbuffered channel publish without a guaranteed receiver = deadlock.
+- HTTP handler spawning a goroutine that uses `r.Context()` after return.

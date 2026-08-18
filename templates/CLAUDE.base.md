@@ -1,62 +1,62 @@
-<!-- Template composto pelo /go-init. Blocos entre [[...]] sao escolhidos conforme o perfil; o resto e fixo. Meta: CLAUDE.md final <= 50 linhas. -->
+<!-- Template composed by /go-init. [[...]] blocks are chosen per profile; the rest is fixed. Target: final CLAUDE.md <= 50 lines. -->
 
-# {{PROJETO}}
+# {{PROJECT}}
 
-{{DESCRICAO_1_LINHA}}
+{{ONE_LINE_DESCRIPTION}}
 
-## Comandos
+## Commands
 - `make build` / `make test` / `make lint` / `make cover`
-- Teste de 1 pacote: `go test ./internal/x/... -run TestNome -v`
-- {{COMANDOS_EXTRAS}}
+- Single package test: `go test ./internal/x/... -run TestName -v`
+- {{EXTRA_COMMANDS}}
 
-## Arquitetura
-{{MAPA_3_LINHAS_MAX_COM_PONTEIROS_DE_ARQUIVO}}
+## Architecture
+{{MAX_3_LINES_WITH_FILE_POINTERS}}
 
-## Regras
-- Codigo sempre em INGLES (identificadores, erros, logs, comentarios), mesmo com chat em outro idioma. Comentario so p/ 'porque' nao obvio; legibilidade vem de nomes e funcoes curtas.
-- Arquivos: tipo junto do comportamento (`order.go` tem `Order` + metodos). Sem `types.go`/`models.go`. Dividir por responsabilidade quando a coesao pedir.
-- Erros: wrap com `%w` + contexto da operacao. Sem panic fora de main.
-- `context.Context` 1o arg em I/O. Toda goroutine tem dono e saida.
-- Testes table-driven; unit sem rede/disco/sleep. `-race` em codigo concorrente.
-- Segredos nunca no codigo (hook bloqueia). Codigo exposto a input externo: skill go-security. go.mod mudou => `make vuln`.
-- Nao refatorar codigo nao relacionado a tarefa.
-- Se o usuario corrigir a mesma coisa 2x: sugerir `/go-learn` (1 linha, nao insistir).
-- Detalhes: skills go-style, go-testing, go-concurrency, go-security (carregar sob demanda).
+## Rules
+- Chat replies: user's language. Code: always English (identifiers, errors, logs, comments). Comments only for non-obvious "why"; readability comes from names and short functions.
+- Files: type lives with its behavior (`order.go` holds `Order` + methods). No `types.go`/`models.go`. Split by responsibility when cohesion demands.
+- Errors: wrap with `%w` + operation context. No panic outside main.
+- `context.Context` first arg for I/O. Every goroutine has an owner and an exit.
+- Tests table-driven; unit tests without network/disk/sleep. `-race` on concurrent code.
+- Secrets never in code (hook blocks). Code exposed to external input: go-security skill. go.mod changed => `make vuln`.
+- Don't refactor code unrelated to the task.
+- If the user corrects the same thing twice: suggest `/go-learn` (1 line, don't push).
+- Details: go-style, go-testing, go-concurrency, go-security skills (load on demand).
 
-[[MODO_AUTOPILOT]]
-## Modo: autopilot
-- Fluxo padrao: /go-plan -> /go-implement -> /go-review -> /go-test. Encadear sem pedir permissao entre etapas.
-- Delegar exploracao ao agent go-explorer; testes ao go-tester (nao rodar suites longas na sessao principal).
-- Pode editar, buildar e testar direto. NUNCA: git push, alterar migrations aplicadas, tocar .env.
-- Ao terminar: diff resumido + resultado dos testes. Sem narrar passo a passo.
-[[/MODO_AUTOPILOT]]
+[[MODE_AUTOPILOT]]
+## Mode: autopilot
+- Default flow: /go-plan -> /go-implement -> /go-review -> /go-test. Chain without asking between stages.
+- Delegate exploration to go-explorer; tests to go-tester (don't run long suites in the main session).
+- May edit, build and test directly. NEVER: git push, touch applied migrations, touch .env.
+- When done: summarized diff + test results. Don't narrate step by step.
+[[/MODE_AUTOPILOT]]
 
-[[MODO_COPILOT]]
-## Modo: copiloto
-- Mudancas pequenas e cirurgicas. Propor diff ANTES de aplicar quando tocar >1 arquivo.
-- Nunca criar arquivos/pacotes novos sem confirmar. Nao rodar comandos alem de build/test do pacote tocado.
-- Perguntar quando o requisito for ambiguo; nao assumir.
-- Respostas curtas: codigo + 1-2 frases. Sem tutorial.
-[[/MODO_COPILOT]]
+[[MODE_COPILOT]]
+## Mode: copilot
+- Small, surgical changes. Propose the diff BEFORE applying when touching >1 file.
+- Never create files/packages without confirming. No commands beyond build/test of the touched package.
+- Ask when the requirement is ambiguous; don't assume.
+- Short answers: code + 1-2 sentences. No tutorials.
+[[/MODE_COPILOT]]
 
 [[DEPS_MINIMAL]]
-## Dependencias: minimalista
-- stdlib primeiro, sempre. Nova dependencia = proibida sem aprovacao explicita minha.
-- Permitidas sem perguntar: `golang.org/x/*`.
-- Se stdlib nao resolve, PARE e proponha: problema, opcao stdlib descartada e por que, lib sugerida.
+## Dependencies: minimal
+- stdlib first, always. New dependency = forbidden without my explicit approval.
+- Allowed without asking: `golang.org/x/*`.
+- If stdlib can't solve it, STOP and propose: problem, stdlib option discarded and why, suggested lib.
 [[/DEPS_MINIMAL]]
 
 [[DEPS_PRAGMATIC]]
-## Dependencias: pragmatica
-- Curadas (usar sem perguntar): {{LISTA_LIBS_DO_STACK}}, `golang.org/x/*`, `google/go-cmp`.
-- Fora da lista: propor com 1 linha de justificativa antes de adicionar.
-- Sempre `go mod tidy` apos mudar deps; verificar licenca e manutencao ativa.
+## Dependencies: pragmatic
+- Curated (use without asking): {{STACK_CURATED_LIBS}}, `golang.org/x/*`, `google/go-cmp`.
+- Off-list: propose with a 1-line justification before adding.
+- Always `go mod tidy` after changing deps; check license and active maintenance.
 [[/DEPS_PRAGMATIC]]
 
 [[STACK]]
 ## Stack
-{{STACK_LINHAS}}
+{{STACK_LINES}}
 [[/STACK]]
 
-## Aprendizados deste projeto
+## Project learnings
 @.claude/learned.md

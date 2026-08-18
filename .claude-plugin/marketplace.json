@@ -1,11 +1,13 @@
 {
   "name": "go-claude-kit",
-  "owner": { "name": "voce" },
+  "owner": {
+    "name": "voce"
+  },
   "plugins": [
     {
       "name": "go-claude-kit",
       "source": "./",
-      "description": "Kit Go backend: gerador /go-init, agents com roteamento de modelo, skills e hooks."
+      "description": "Go backend kit: /go-init generator, model-routed agents, skills, quality/security hooks."
     }
   ]
 }

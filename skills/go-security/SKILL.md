@@ -1,37 +1,37 @@
 ---
 name: go-security
-description: Seguranca em Go - input, SQL, crypto, segredos, HTTP hardening, supply chain. Use ao escrever codigo exposto a input externo ou ao auditar.
+description: Go security - input, SQL, crypto, secrets, HTTP hardening, supply chain. Use when writing code exposed to external input or when auditing.
 ---
 
 # go-security
 
-## Input externo
-- Validar na borda (handler), tipos fortes dali em diante. Limitar tamanho: `http.MaxBytesReader`.
-- `json.Decoder` + `DisallowUnknownFields()` para APIs estritas.
-- Path de arquivo vindo de fora: `filepath.Clean` + verificar prefixo com `filepath.Rel` (traversal).
-- `exec.Command`: args separados, NUNCA via shell/`sh -c` com input externo.
+## External input
+- Validate at the edge (handler), strong types from there on. Bound size: `http.MaxBytesReader`.
+- `json.Decoder` + `DisallowUnknownFields()` for strict APIs.
+- File path from outside: `filepath.Clean` + prefix check via `filepath.Rel` (traversal).
+- `exec.Command`: separate args, NEVER through shell/`sh -c` with external input.
 
 ## SQL
-- Sempre placeholders (`$1`/`?`). Concatenar input em query = BLOCKER, mesmo "sanitizado".
-- Identificadores dinamicos (nome de coluna p/ ORDER BY): allowlist explicita.
+- Always placeholders (`$1`/`?`). Concatenating input into a query = BLOCKER, even "sanitized".
+- Dynamic identifiers (column for ORDER BY): explicit allowlist.
 
-## Crypto e auth
-- Random p/ token/nonce: `crypto/rand`, jamais `math/rand`.
-- Hash de senha: `golang.org/x/crypto/bcrypt` ou `argon2`. md5/sha1 p/ seguranca = BLOCKER.
-- Comparar segredos: `subtle.ConstantTimeCompare`, nao `==`.
-- TLS: nunca `InsecureSkipVerify: true` fora de teste marcado.
+## Crypto and auth
+- Random for token/nonce: `crypto/rand`, never `math/rand`.
+- Password hashing: `golang.org/x/crypto/bcrypt` or `argon2`. md5/sha1 for security = BLOCKER.
+- Secret comparison: `subtle.ConstantTimeCompare`, not `==`.
+- TLS: never `InsecureSkipVerify: true` outside tagged tests.
 
-## Segredos
-- Nunca no codigo/repo. Config via env (`os.Getenv`) ou secret manager.
-- Nao logar: token, senha, header Authorization, corpo de request de auth. slog: campos explicitos, nunca despejar struct de config.
-- Hook go-secret-guard bloqueia padroes obvios em edicao; nao e desculpa p/ relaxar.
+## Secrets
+- Never in code/repo. Config via env (`os.Getenv`) or secret manager.
+- Never log: tokens, passwords, Authorization header, auth request bodies. slog: explicit fields, never dump config structs.
+- go-secret-guard hook blocks obvious patterns on edit; not an excuse to relax.
 
 ## HTTP server/client
-- `http.Server` com `ReadHeaderTimeout`, `ReadTimeout`, `WriteTimeout`, `IdleTimeout`. Default sem timeout = slowloris.
-- Client: `http.Client{Timeout: ...}` ou ctx com deadline. `http.DefaultClient` cru = WARN.
-- Headers em API publica: `X-Content-Type-Options: nosniff`; CORS allowlist, nunca `*` com credenciais.
+- `http.Server` with `ReadHeaderTimeout`, `ReadTimeout`, `WriteTimeout`, `IdleTimeout`. Defaults have no timeout = slowloris.
+- Client: `http.Client{Timeout: ...}` or ctx deadline. Bare `http.DefaultClient` = WARN.
+- Public API response headers: `X-Content-Type-Options: nosniff`; CORS allowlist, never `*` with credentials.
 
 ## Supply chain
-- `govulncheck ./...` apos qualquer mudanca no go.mod e no CI.
-- Dep nova: checar manutencao, issues de seguranca abertas, transitivas (`go mod graph | wc -l` antes/depois).
-- `go.sum` sempre commitado. GOTOOLCHAIN fixo em producao.
+- `govulncheck ./...` after any go.mod change and in CI.
+- New dep: check maintenance, open security issues, transitive count (`go mod graph | wc -l` before/after).
+- `go.sum` always committed. Pinned GOTOOLCHAIN in production.

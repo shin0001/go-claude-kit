@@ -1,11 +1,11 @@
 ---
-description: Avalia adicao de dependencia conforme a politica do projeto
-argument-hint: <import path da lib>
+description: Evaluates adding a dependency according to the project policy
+argument-hint: <library import path>
 ---
 
-Lib: "$ARGUMENTS". Ler a politica de dependencias no CLAUDE.md.
+Lib: "$ARGUMENTS". Read the dependency policy in CLAUDE.md.
 
-1. **minimal**: mostrar como resolver com stdlib/x. So se inviavel, apresentar a lib com custo: transitivas (`go mod graph` estimado), manutencao, licenca. Decisao e do usuario.
-2. **pragmatic**: na lista curada => `go get` + `go mod tidy` direto. Fora => 3 linhas: o que resolve, alternativa stdlib descartada e por que, saude do repo (busque na web se necessario). Aguardar ok.
+1. **minimal**: show how to solve with stdlib/x. Only if unviable, present the lib with its cost: transitives (estimated via `go mod graph`), maintenance, license. User decides.
+2. **pragmatic**: on the curated list => `go get` + `go mod tidy` directly. Off-list => 3 lines: what it solves, stdlib alternative discarded and why, repo health (web-search if needed). Wait for OK.
 
-Nunca adicionar dep sem o gate acima. Apos adicionar: registrar na lista curada do CLAUDE.md.
+Never add a dep without the gate above. After adding: record it in the CLAUDE.md curated list.
