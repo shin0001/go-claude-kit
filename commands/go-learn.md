@@ -11,7 +11,7 @@ Lesson: "$ARGUMENTS". If empty: find recent user corrections, rework, or repeate
 | **project** | specific to this codebase (local convention, local pitfall) | `.claude/learned.md` | 15 lines |
 | **global-always** | user preference valid in EVERY project, every turn | `~/.claude/CLAUDE.md`, section `## Go — learnings` | 10 lines |
 | **global-technical** | Go technical pattern/pitfall, useful on demand | `~/.claude/skills/go-lessons/SKILL.md` | 30 lines |
-| **plugin** | universal best practice that should ship to any kit user | patch in the go-claude-kit repo | — |
+| **plugin** | universal best practice that should ship to any kit user | patch in the shin0001/go-claude-kit repo | — |
 
 Criterion: personal preference NEVER goes to plugin. Single-codebase detail NEVER goes global.
 

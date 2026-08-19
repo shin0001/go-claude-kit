@@ -1,139 +1,135 @@
 # go-claude-kit
 
-Plugin do Claude Code que gera, por projeto, um setup completo para backend Go: `CLAUDE.md`, agents com roteamento de modelo, skills de boas práticas, hooks de qualidade e um fluxo `plan → implement → review → test` — tudo calibrado por perfil (autopilot vs copiloto, minimal vs pragmatic) e otimizado para gastar o mínimo de tokens/limite de uso.
+A Claude Code plugin that generates, per project, a complete setup for Go backend work: `CLAUDE.md`, model-routed agents, best-practice skills, quality/security hooks, and a `plan → implement → review → test` workflow — all calibrated by profile (autopilot vs copilot, minimal vs pragmatic deps) and optimized to spend the least tokens/usage limit possible.
 
-## Idioma
+Everything the model reads is written in English (20–35% cheaper to tokenize, better adherence on Haiku agents). The conversation stays in whatever language you use — the first rule of every generated CLAUDE.md anchors exactly that ("chat replies: user's language; code: always English").
 
-Tudo que **entra em contexto** (skills, agents, comandos, template do CLAUDE.md, mensagens de erro dos hooks) está em **inglês**: tokeniza 20–35% mais barato e melhora a aderência dos agents em Haiku. Tudo que **só humano lê** (este README) fica em português. Isso não muda a conversa: o Claude responde no idioma do chat — a primeira regra do CLAUDE.md gerado ancora exatamente isso ("chat no idioma do usuário; código em inglês").
-
-## Instalação
-
-Publique este repositório no seu GitHub (ex: `shin0001/go-claude-kit`) e:
+## Installation
 
 ```bash
 claude plugin marketplace add shin0001/go-claude-kit
 claude plugin install go-claude-kit@go-claude-kit
 ```
 
-Alternativa sem plugin: copie `commands/`, `agents/` e `skills/` para `~/.claude/` (uso pessoal em todos os projetos) ou `.claude/` do projeto.
+No-plugin alternative: copy `commands/`, `agents/` and `skills/` into `~/.claude/` (personal, all projects) or a project's `.claude/`.
 
-Recomendado no ambiente: `gofumpt`, `goimports`, `golangci-lint`, `jq`.
+Recommended tooling: `gofumpt`, `goimports`, `golangci-lint`, `jq` — or run `scripts/install-tools.sh`.
 
-Caveman (opcional, ver seção abaixo):
+Caveman (optional, see section below):
 
 ```bash
 claude plugin marketplace add JuliusBrussee/caveman
 claude plugin install caveman@caveman
 ```
 
-## Uso
+## Usage
 
-Em qualquer projeto Go (novo ou existente):
+In any Go project (new or existing):
 
 ```
 /go-init
 ```
 
-O Claude detecta o que já existe (go.mod, layout, Makefile), faz 3–4 perguntas e gera:
+Claude detects what already exists (go.mod, layout, Makefile), asks 3–4 questions and generates:
 
-| Arquivo | O quê |
+| File | What |
 |---|---|
-| `CLAUDE.md` | ≤50 linhas, composto do perfil escolhido |
-| `.claude/settings.json` | permissões + hooks do modo |
-| `.claude/hooks/*.sh` | gofumpt/goimports/vet + secret-guard pós-edição; build-check no Stop (só autopilot) |
-| `.claude/learned.md` | aprendizados do projeto (importado pelo CLAUDE.md, cap 15 linhas) |
-| `Makefile`, `.golangci.yml` | só se não existirem |
-| `.mcp.json` | só se fizer sentido (raramente) |
+| `CLAUDE.md` | ≤50 lines, composed from the chosen profile |
+| `.claude/settings.json` | mode-specific permissions + hooks |
+| `.claude/hooks/*.sh` | gofumpt/goimports/vet + secret-guard after every edit; build check on Stop (autopilot only) |
+| `.claude/learned.md` | project learnings (imported by CLAUDE.md, 15-line cap) |
+| `Makefile`, `.golangci.yml` | only if absent |
+| `.mcp.json` | only when it makes sense (rarely) |
 
-Depois, o ciclo de trabalho:
+Then the working cycle:
 
 ```
-/go-plan adicionar rate limiting no gateway   # plano terso em docs/plans/
-/go-implement                                  # executa conforme o modo
-/go-review                                     # achados em 1 linha cada
-/go-test -race                                 # roda e tria no Haiku
-/go-audit                                      # govulncheck + gosec + gitleaks + revisão
-/go-deps github.com/redis/go-redis/v9          # gate de dependência
-/go-learn "sqlc: sempre regenerar após migration"  # persiste lição no escopo certo
+/go-plan add rate limiting to the gateway     # terse plan in docs/plans/
+/go-implement                                  # executes according to the mode
+/go-review                                     # one-line findings
+/go-test -race                                 # runs and triages on Haiku
+/go-audit                                      # govulncheck + gosec + gitleaks + review
+/go-deps github.com/redis/go-redis/v9          # dependency gate
+/go-learn "sqlc: always regenerate after migrations"  # persists a lesson in the right scope
 ```
 
-## Perfis
+## Profiles
 
-Dois eixos independentes, escolhidos no `/go-init` — é isso que torna o kit reutilizável entre projetos diferentes:
+Two independent axes, chosen in `/go-init` — this is what makes the kit reusable across very different projects:
 
-**Automação**
-- `autopilot` — Claude encadeia plan→implement→review→test sozinho, edita com `acceptEdits`, delega a subagents, tem Stop hook que bloqueia encerrar com build quebrado. `git push` sempre proibido.
-- `copilot` — assistente cirúrgico: mudanças pequenas, mostra diff antes de aplicar em >1 arquivo, não cria arquivos sem confirmar, respostas curtas.
+**Automation**
+- `autopilot` — Claude chains plan→implement→review→test on its own, edits with `acceptEdits`, delegates to subagents, and a Stop hook blocks ending the turn with a broken build. `git push` is always denied.
+- `copilot` — surgical assistant: small changes, shows the diff before applying to >1 file, never creates files without confirming, short answers.
 
-**Dependências**
-- `minimal` — stdlib-first; dependência nova exige sua aprovação com justificativa; `golang.org/x/*` liberado.
-- `pragmatic` — lista curada liberada (preenchida conforme o stack: chi+sqlc+pgx, ou gin/echo+gorm, etc.); fora da lista, gate de 3 linhas.
+**Dependencies**
+- `minimal` — stdlib-first; any new dependency requires your approval with justification; `golang.org/x/*` allowed.
+- `pragmatic` — curated list allowed without asking (filled per stack: chi+sqlc+pgx, or gin/echo+gorm, etc.); off-list goes through a 3-line gate.
 
-## Agents e roteamento de modelo
+## Agents and model routing
 
-A maior alavanca de economia está aqui — cada agent roda no modelo mais barato que dá conta:
+The biggest savings lever lives here — each agent runs on the cheapest model that can do the job:
 
-| Agent | Modelo | Papel | Acesso |
+| Agent | Model | Role | Access |
 |---|---|---|---|
-| `go-explorer` | **haiku** | achar código, responder "onde/como" | read-only |
-| `go-planner` | inherit | plano de implementação terso | read-only + bash |
-| `go-implementer` | **sonnet** | escrever código do plano | completo |
-| `go-reviewer` | **sonnet** | review formato `arquivo:linha [SEV] → fix` | read-only |
-| `go-tester` | **haiku** | rodar suite, triar falhas | bash + read |
-| `go-auditor` | **sonnet** | auditoria de segurança (tools + manual) | read-only + bash |
+| `go-explorer` | **haiku** | find code, answer "where/how" | read-only |
+| `go-planner` | inherit | terse implementation plan | read-only + bash |
+| `go-implementer` | **sonnet** | write the plan's code | full |
+| `go-reviewer` | **sonnet** | review as `file:line [SEV] → fix` | read-only |
+| `go-tester` | **haiku** | run suite, triage failures | bash + read |
+| `go-auditor` | **sonnet** | security audit (tools + manual) | read-only + bash |
 
-Subagents também protegem o contexto da sessão principal: a saída de um `go test ./...` gigante morre no contexto do tester; só o diagnóstico de 3 linhas volta.
+Subagents also protect the main session's context: the output of a giant `go test ./...` dies inside the tester's context; only a 3-line diagnosis comes back.
 
 ## Skills
 
-Carregadas sob demanda (não pesam quando não usadas): `go-style` (Effective Go + Google Style destilados), `go-testing` (table-driven, paralelismo, mocks), `go-concurrency` (goroutines, channels, ctx, errgroup), `go-security` (input, SQL, crypto, segredos, hardening, supply chain), `go-review-checklist` (severidades BLOCKER/WARN/NIT). Regras transversais embutidas no template e nos agents: código sempre em inglês (independente do idioma do chat), comentários apenas para "porquês" não óbvios, e organização de arquivos por responsabilidade — tipo junto do comportamento, sem `types.go` genérico.
+Loaded on demand (they cost nothing when unused): `go-style` (Effective Go + Google Style distilled), `go-testing` (table-driven, parallelism, mocks), `go-concurrency` (goroutines, channels, ctx, errgroup), `go-security` (input, SQL, crypto, secrets, hardening, supply chain), `go-review-checklist` (BLOCKER/WARN/NIT severities). Cross-cutting rules are baked into the template and agents: code always in English (regardless of chat language), comments only for non-obvious "whys", and file organization by responsibility — types live with their behavior, no generic `types.go`.
 
-## Segurança
+## Security
 
-Três camadas, do zero-token ao sob-demanda:
+Three layers, from zero-token to on-demand:
 
-1. **Hooks (custo zero de token)** — `go-secret-guard.sh` roda após toda edição e bloqueia (exit 2) padrões de segredo (chave privada, AWS/GitHub/API keys, `password = "..."`), devolvendo o erro para o Claude corrigir na hora. Fixtures dummy: marque a linha com `// gcksafe`. `testdata/` é ignorado.
-2. **Ferramentas via `make`** — `make vuln` (govulncheck: só vulns *alcançáveis* no call graph) e `make audit` (lint com gosec + vuln + gitleaks). O autopilot roda govulncheck automaticamente quando `go.mod` muda.
-3. **`/go-audit`** — o agent `go-auditor` combina as ferramentas com revisão manual guiada pela skill `go-security` (math/rand em token, SQL concatenado, server sem timeout, InsecureSkipVerify…). Saída: `arquivo:linha [CRIT|HIGH|MED|LOW] problema → fix`.
+1. **Hooks (zero token cost)** — `go-secret-guard.sh` runs after every edit and blocks (exit 2) secret patterns (private keys, AWS/GitHub/API keys, `password = "..."`), returning the error for Claude to fix on the spot. Dummy fixtures: mark the line with `// gcksafe`. `testdata/` is ignored.
+2. **Tools via `make`** — `make vuln` (govulncheck: only vulns *reachable* in the call graph) and `make audit` (lint with gosec + vuln + gitleaks). Autopilot runs govulncheck automatically whenever `go.mod` changes.
+3. **`/go-audit`** — the `go-auditor` agent combines the tools with a manual review guided by the `go-security` skill (math/rand near tokens, concatenated SQL, servers without timeouts, InsecureSkipVerify…). Output: `file:line [CRIT|HIGH|MED|LOW] problem → fix`.
 
-Os `settings.json` também ganharam `deny` para `*.pem`, `id_rsa*`, `*.key` — o Claude nem consegue ler material de chave por engano.
+The `settings.json` files also `deny` reads of `*.pem`, `id_rsa*` and `*.key` — Claude can't even read key material by accident.
 
-## Autoaprimoramento
+## Self-improvement
 
-O comando `/go-learn` captura lições (de um argumento seu ou extraídas da conversa quando você corrigiu algo) e as persiste no escopo certo:
+The `/go-learn` command captures lessons (from an argument you give, or extracted from the conversation when you corrected something) and persists them in the right scope:
 
-| Escopo | Destino | Custo de contexto | Cap |
+| Scope | Destination | Context cost | Cap |
 |---|---|---|---|
-| projeto | `.claude/learned.md` (importado via `@` no CLAUDE.md) | todo turno, neste projeto | 15 linhas |
-| global sempre-ativo | `~/.claude/CLAUDE.md` § `## Go — aprendizados` | todo turno, todo projeto | 10 linhas |
-| global técnico | skill `~/.claude/skills/go-lessons/` | só quando relevante | 30 linhas |
-| plugin | patch no seu clone do go-claude-kit | zero (vira versão nova) | — |
+| project | `.claude/learned.md` (imported via `@` in CLAUDE.md) | every turn, this project | 15 lines |
+| global always-on | `~/.claude/CLAUDE.md` § `## Go — learnings` | every turn, every project | 10 lines |
+| global technical | `~/.claude/skills/go-lessons/` skill | only when relevant | 30 lines |
+| plugin | patch in your clone of shin0001/go-claude-kit | zero (ships as a new version) | — |
 
-O desenho é anti-inflação por construção: caps invioláveis, dedupe/merge obrigatório antes de inserir, e estourou o cap → funde ou remove (você decide). Preferência pessoal nunca sobe ao plugin; detalhe de um codebase nunca vira global. O gatilho é distribuído: o CLAUDE.md gerado instrui o Claude a *sugerir* `/go-learn` quando você corrigir a mesma coisa duas vezes, e o autopilot faz uma retro de 1 linha ao final de cada `/go-implement`. Nada é gravado sem sua confirmação — a promoção ao plugin gera um diff no seu clone local (nunca edita `~/.claude/plugins/` direto, que seria sobrescrito no update).
+The design is anti-inflation by construction: inviolable caps, mandatory dedupe/merge before inserting, and cap overflow → merge or remove (you decide). Personal preferences never get promoted to the plugin; single-codebase details never go global. Triggers are distributed: the generated CLAUDE.md tells Claude to *suggest* `/go-learn` when you correct the same thing twice, and autopilot ends every `/go-implement` with a 1-line retro. Nothing is written without your confirmation — plugin promotion produces a diff in your local clone (it never edits `~/.claude/plugins/` directly, which updates would overwrite).
 
-## Economia de tokens no plano Pro/Max
+## Token economy on Pro/Max plans
 
-No seu caso o custo real é o **limite de uso**, não dólares. O que este kit já faz e o que fica com você:
+On subscription, the real cost is the **usage limit**, not dollars. What the kit already does, and what stays with you:
 
-1. **Haiku/Sonnet nos subagents** — trabalho pesado de volume (explorar, testar) roda barato; o modelo caro fica para planejar e decidir.
-2. **CLAUDE.md ≤50 linhas** — ele entra em *todo* prompt da sessão. Cada linha inútil é cobrada centenas de vezes.
-3. **Quase zero MCP** — cada MCP ativo injeta as definições de tools em todo turno. Prefira CLIs via Bash: `gh` em vez de GitHub MCP, `psql` em vez de Postgres MCP. O `templates/mcp.json` existe, mas é opt-in.
-4. **Tools restritos por agent** — reviewer não carrega Write/Edit; menos definição de tool, menos superfície de erro.
-5. **Hooks em shell, não em prompt** — formatar e vetar código via script custa zero tokens; pedir isso ao modelo custa em todo turno.
-6. **Saídas tersas por contrato** — todos os agents têm formato de saída fixo e curto.
-7. **Hábitos**: `/clear` entre tarefas não relacionadas; `/compact` quando o contexto encher; plan mode (`shift+tab`) antes de tarefas grandes — implementar na direção errada é o maior desperdício de limite que existe.
+1. **Haiku/Sonnet on subagents** — high-volume grunt work (exploring, testing) runs cheap; the expensive model plans and decides.
+2. **CLAUDE.md ≤50 lines** — it enters *every* prompt of the session. Every useless line is billed hundreds of times.
+3. **Near-zero MCP** — every active MCP injects its tool definitions into every turn. Prefer CLIs via Bash: `gh` instead of the GitHub MCP, `psql` instead of the Postgres MCP. `templates/mcp.json` exists, but it's opt-in.
+4. **Restricted tools per agent** — the reviewer doesn't carry Write/Edit; fewer tool definitions, smaller error surface.
+5. **Hooks in shell, not in prompt** — formatting and vetting via script costs zero tokens; asking the model to do it costs on every turn.
+6. **Terse outputs by contract** — every agent has a fixed, short output format.
+7. **Habits**: `/clear` between unrelated tasks; `/compact` when context fills up; plan mode (`shift+tab`) before big tasks — implementing in the wrong direction is the biggest limit-burner there is.
 
 ## Caveman
 
-[Caveman](https://github.com/JuliusBrussee/caveman) comprime o *estilo* das respostas (~65% menos tokens de saída) mantendo código/comandos byte-exatos — e responde no seu idioma (português entra, caveman-português sai).
+[Caveman](https://github.com/JuliusBrussee/caveman) compresses the *style* of replies (~65% fewer output tokens) while keeping code/commands byte-exact — and it answers in your language (Portuguese in, caveman-Portuguese out).
 
-Números honestos, do próprio projeto: ele só reduz **output**; adiciona ~1–1,5k tokens de *input* por turno; em cargas já concisas pode ficar negativo. Por isso a integração aqui é calibrada:
+Honest numbers, from the project itself: it only reduces **output**; it adds ~1–1.5k *input* tokens per turn; on already-terse workloads it can go net-negative. That's why the integration here is calibrated:
 
-- **Copilot / sessões conversacionais** → vale muito (é onde o modelo mais "fala").
-- **Autopilot** → ganho menor (a saída já é majoritariamente código e os agents já são tersos), mas inofensivo.
-- **`/caveman-compress CLAUDE.md`** → o melhor uso: comprime o arquivo de memória ~46% e economiza **input em toda sessão futura**. O `/go-init` sugere isso ao final.
+- **Copilot / conversational sessions** → big win (where the model "talks" the most).
+- **Autopilot** → smaller gain (output is mostly code and the agents are already terse), but harmless.
+- **`/caveman-compress CLAUDE.md`** → the best use: compresses the memory file ~46% and saves **input in every future session**. `/go-init` suggests it at the end. It compounds with the English tokenization discount on the same always-loaded file.
 
-## Estrutura
+## Structure
 
 ```
 go-claude-kit/
@@ -151,20 +147,20 @@ go-claude-kit/
 
 ## Extras
 
-- **CI (`templates/ci.yml`)** — GitHub Actions com build, golangci-lint, `test -race`, govulncheck e gitleaks. O `/go-init` oferece copiar. É a rede de segurança *fora* do Claude: garante as mesmas regras quando alguém commita sem ele.
-- **`/go-ship`** — agrupa mudanças em commits atômicos convencionais (≤50 chars), roda pré-voo (build + testes dos pacotes tocados) e imprime o comando de push + `gh pr create` pronto para colar. O push continua negado no settings de propósito — o último clique é sempre seu.
-- **`/go-handoff`** — o hábito que mais economiza limite no Pro/Max: antes de `/clear`, salva estado em `docs/handoff.md` (≤30 linhas: feito, próximo passo, arquivos quentes, armadilhas). Retomar lendo 30 linhas é ordens de magnitude mais barato que arrastar uma sessão inchada.
-- **`/go-bench`** — benchmarks com `-count=6` + comparação estatística via `benchstat` contra baseline; só reporta deltas significativos (nada de comemorar ruído). Sugere pprof em regressão.
-- **`scripts/install-tools.sh`** — instala gofumpt, goimports, govulncheck, gosec e benchstat de uma vez (golangci-lint e gitleaks via binário oficial).
+- **CI (`templates/ci.yml`)** — GitHub Actions with build, golangci-lint, `test -race`, govulncheck and gitleaks. `/go-init` offers to copy it. It's the safety net *outside* Claude: the same rules hold when someone commits without it.
+- **`/go-ship`** — groups changes into atomic conventional commits (≤50 chars), runs a preflight (build + tests of touched packages), and prints the push + `gh pr create` command ready to paste. Push stays denied in settings on purpose — the last click is always yours.
+- **`/go-handoff`** — the single best limit-saving habit on Pro/Max: before `/clear`, it saves state to `docs/handoff.md` (≤30 lines: done, next step, hot files, pitfalls). Resuming from 30 lines is orders of magnitude cheaper than dragging a bloated session.
+- **`/go-bench`** — benchmarks with `-count=6` + statistical comparison via `benchstat` against a baseline; reports only significant deltas (no celebrating noise). Suggests pprof on regressions.
+- **`scripts/install-tools.sh`** — installs gofumpt, goimports, govulncheck, gosec and benchstat in one go (golangci-lint and gitleaks via official binaries).
 
-Três hábitos que não são arquivos:
+Three habits that aren't files:
 
-1. **Worktrees para paralelismo** — `git worktree add ../proj-feat feat` e uma sessão do Claude por worktree: duas tarefas simultâneas sem brigarem pelo mesmo estado de arquivos.
-2. **Overrides locais** — preferências suas que não devem ir ao repo do time: `.claude/settings.local.json` e `CLAUDE.local.md` (ambos já no .gitignore gerado).
-3. **Versione o plugin** — quando `/go-learn` promover algo ao kit, bump em `plugin.json` e commit no repo do plugin; os projetos recebem no próximo update, e o histórico do git vira o changelog do seu "processo".
+1. **Worktrees for parallelism** — `git worktree add ../proj-feat feat` and one Claude session per worktree: two simultaneous tasks without fighting over file state.
+2. **Local overrides** — personal preferences that shouldn't reach the team repo: `.claude/settings.local.json` and `CLAUDE.local.md` (both already in the generated .gitignore).
+3. **Version the plugin** — when `/go-learn` promotes something to the kit, bump `plugin.json` and commit to shin0001/go-claude-kit; projects pick it up on the next update, and the git history becomes the changelog of your *process*.
 
-## Personalização
+## Customization
 
-- Novo perfil (ex: "prototipagem"): adicione blocos `[[MODO_X]]` no `CLAUDE.base.md` + um `settings.X.json`, e uma opção na pergunta 1 do `commands/go-init.md`.
-- Stack novo: acrescente a opção na pergunta 3 do `go-init` e a lista curada correspondente.
-- Regras de time: edite as skills — elas valem para todos os projetos que usam o plugin; regras de *um* projeto vão no CLAUDE.md dele.
+- New profile (e.g. "prototyping"): add `[[MODE_X]]` blocks to `CLAUDE.base.md` + a `settings.X.json`, and an option to question 1 of `commands/go-init.md`.
+- New stack: add the option to question 3 of `go-init` and the matching curated list.
+- Team rules: edit the skills — they apply to every project using the plugin; rules for *one* project go in that project's CLAUDE.md.
