@@ -11,8 +11,9 @@ Target: "$ARGUMENTS" (empty: most recent plan in `docs/plans/`).
 3. Failures: send diagnosis back to implementer. Max 3 cycles; then stop and report.
 4. `go.mod`/`go.sum` changed => `govulncheck ./...` (or delegate to **go-auditor** if the dep change was large).
 5. Delegate the final diff to **go-reviewer**. BLOCKERs: fix and re-review once.
-6. Final report: files, tests (pass/fail), remaining findings. Terse.
-7. Retro (1 line, only if applicable): user correction or avoidable rework happened => suggest `/go-learn "<lesson>"`.
+6. Plan fully done and green => move it to `docs/plans/done/` (keeps active plans folder clean for go-explorer).
+7. Final report: files, tests (pass/fail), remaining findings. Terse.
+8. Retro (1 line, only if applicable): user correction or avoidable rework happened => suggest `/go-learn "<lesson>"`.
 
 **copilot** mode:
 1. Implement YOURSELF in the main session, step by step through the plan.

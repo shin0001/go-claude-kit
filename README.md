@@ -134,15 +134,17 @@ Honest numbers, from the project itself: it only reduces **output**; it adds ~1�
 ```
 go-claude-kit/
 ├── .claude-plugin/{plugin,marketplace}.json
+├── .github/workflows/validate.yml   (CI of the kit itself)
 ├── commands/    go-init, go-plan, go-implement, go-review, go-test,
-│                go-audit, go-deps, go-learn, go-ship, go-handoff, go-bench
+│                go-audit, go-deps, go-learn, go-ship, go-handoff, go-bench,
+│                go-debug, go-upgrade
 ├── agents/      go-explorer, go-planner, go-implementer, go-reviewer,
 │                go-tester, go-auditor
 ├── skills/      go-style, go-testing, go-concurrency, go-security,
 │                go-review-checklist
-├── scripts/     install-tools.sh
+├── scripts/     install-tools.sh, validate-kit.sh
 └── templates/   CLAUDE.base.md, settings.{autopilot,copilot}.json,
-                 hooks/, Makefile, .golangci.yml, ci.yml, mcp.json
+                 hooks/, Makefile, .golangci.yml, ci.yml, dependabot.yml, mcp.json
 ```
 
 ## Extras
@@ -152,6 +154,10 @@ go-claude-kit/
 - **`/go-handoff`** — the single best limit-saving habit on Pro/Max: before `/clear`, it saves state to `docs/handoff.md` (≤30 lines: done, next step, hot files, pitfalls). Resuming from 30 lines is orders of magnitude cheaper than dragging a bloated session.
 - **`/go-bench`** — benchmarks with `-count=6` + statistical comparison via `benchstat` against a baseline; reports only significant deltas (no celebrating noise). Suggests pprof on regressions.
 - **`scripts/install-tools.sh`** — installs gofumpt, goimports, govulncheck, gosec and benchstat in one go (golangci-lint and gitleaks via official binaries).
+- **`/go-upgrade`** — syncs a project's generated files (settings, hooks, Makefile, lint, CI) with the current kit templates. Diff-classifies each file: identical → skip, template-only drift → replace, locally customized → 3-way merge that never deletes a line it can't attribute to an old template. CLAUDE.md is never overwritten — new rule lines are proposed one by one.
+- **`/go-debug`** — systematic bug fixing with one hard discipline: no fix before a red test. Reproduce → isolate (go-explorer, `git log -S`, optional bisect) → minimal fix → `-race` verify; the repro test stays as a regression test.
+- **Kit self-validation (`scripts/validate-kit.sh` + `.github/workflows/validate.yml`)** — the kit repo now checks itself: JSON validity, shell syntax + shellcheck, required frontmatter in every agent/skill/command, hook references, and token-budget guards (CLAUDE.base ≤90 lines, skills ≤70). Since `/go-learn` promotes lessons by editing this repo, the CI is what keeps self-improvement from silently breaking the kit.
+- **`templates/dependabot.yml`** — weekly grouped gomod + actions updates. Closes the supply-chain loop: govulncheck detects, Dependabot remediates. `/go-init` offers it alongside CI.
 
 Three habits that aren't files:
 

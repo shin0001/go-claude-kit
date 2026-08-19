@@ -27,7 +27,7 @@ d. **Makefile** and **.golangci.yml**: copy only if absent.
 d2. **.claude/learned.md**: create with `# Learnings (max 15 — managed by /go-learn)` if absent. Target of the CLAUDE.md `@.claude/learned.md` import.
 d3. **~/.claude/skills/go-lessons/SKILL.md**: if absent, ask whether to create (global scope for /go-learn technical lessons). Skeleton: frontmatter `name: go-lessons`, `description: This user's Go lessons. Use when writing/reviewing Go.` + empty body.
 e. **.mcp.json**: ask only if pragmatic profile + project uses Postgres or many libs; otherwise don't even offer (MCP costs input tokens every turn).
-e2. **.github/workflows/ci.yml**: if repo has a GitHub remote and no CI, ask whether to copy `templates/ci.yml` (build + lint + test -race + govulncheck + gitleaks).
+e2. **.github/workflows/ci.yml**: if repo has a GitHub remote and no CI, ask whether to copy `templates/ci.yml` (build + lint + test -race + govulncheck + gitleaks). Same answer applies to `templates/dependabot.yml` -> `.github/dependabot.yml` (weekly gomod + actions updates).
 e3. Tools: check `gofumpt`, `golangci-lint`, `govulncheck` on PATH; if missing, offer to run `${CLAUDE_PLUGIN_ROOT}/scripts/install-tools.sh`.
 f. `.gitignore`: ensure `cover.out` and `.claude/settings.local.json`.
 

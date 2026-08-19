@@ -1,7 +1,7 @@
 {
   "name": "go-claude-kit",
   "description": "Go backend kit: /go-init generator, model-routed agents, skills, quality/security hooks, plan->implement->review->test flow.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": {
     "name": "shin0001"
   },
