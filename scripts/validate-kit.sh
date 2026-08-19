@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Validates the kit's own structure. Run locally and in CI. Exit != 0 on any failure.
 set -u
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 1
 FAIL=0
 err() { echo "FAIL: $*"; FAIL=1; }
 
